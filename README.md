@@ -87,3 +87,38 @@ professional_score_2026-10-22T12-30-00.xml
 ### 说明
 
 `十二音.py` 中保留了部分历史算法模块以兼容已有功能。程序从文件前部的 `TwelveToneSuite` 图形界面入口启动。
+
+
+## Architecture at a glance / 代码架构
+
+The diagram follows the public application entry point and export path. The author chooses musical material and the compositional settings.
+
+```mermaid
+flowchart TD
+    Main["main()\nCreate Tk root window"] --> UI["TwelveToneSuite\nMonochrome workspace"]
+
+    UI --> Input["Tone-row input\nManual / Random / Default / Clear"]
+    Input --> MatrixCore["TwelveToneMatrix\nGenerate P / I / R / RI"]
+    MatrixCore --> Variants["Sequence variants\nP / I / R / RI"]
+    MatrixCore --> MatrixView["Twelve-tone matrix\n12 × 12 grid"]
+    MatrixView --> CurrentMatrix["current_matrix\ncurrent_matrix_data"]
+
+    UI --> MusicPanel["Music generation panel\nInstruments / Tempo / Measures / Technique / Emotion"]
+    CurrentMatrix --> MusicPanel
+    MusicPanel --> Generate["start_workspace_generation()"]
+    Generate --> Composer["AdvancedTwelveToneComposer\nrun_with_inputs()"]
+    Composer --> Score["create_professional_score()"]
+    Score --> Techniques["Emotion expression\nIntelligent phrasing\nNotation humanization"]
+    Techniques --> MusicXML["generate_sibelius_files()"]
+    MusicXML --> Optimizer["XMLOptimizer\nOptimize and save MusicXML"]
+    Optimizer --> Desktop["User Desktop\nprofessional_score_*.xml"]
+    Desktop --> OpenSibelius["open -a Sibelius\nOne-click open"]
+
+    UI --> Result["Completion dialog\nShow path / Reveal file / Open in Sibelius"]
+    Desktop --> Result
+
+    Legacy["Legacy compatibility modules\nOlder classes retained later in the file"] -.-> MatrixCore
+    Legacy -.-> Composer
+```
+
+[Read the detailed bilingual architecture](ARCHITECTURE.md).
